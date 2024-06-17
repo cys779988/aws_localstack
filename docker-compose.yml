@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  localstack:
+    container_name: localstack
+    image: localstack/localstack
+    environment:
+      - SERVICES=sns,sqs
+      - DEBUG=1
+      - X_AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - X_AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - X_AWS_REGION=${AWS_REGION}
+    ports:
+      - "4566:4566"  # Edge port
+      - "4575:4575"  # SNS port
+      - "4576:4576"  # SQS port
+    volumes:
+      - ./init-scripts/init.sh:/etc/localstack/init/ready.d/init-aws.sh  # ready hook
+      - ${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
